@@ -61,8 +61,11 @@ public class GoogleQuery {
 				Element h3 = li.select("h3.r").get(0);
 				String title = h3.text();
 				
-				Element cite = li.select("cite").get(0);
-				String citeUrl = cite.text();
+//				System.out.println(li);
+				String ding = li.toString();
+				String citeUrl = ding.substring(ding.indexOf("http"), ding.indexOf("&amp"));
+//				Element cite = li.select("cite").get(0);
+//				String citeUrl = cite.text();
 				System.out.println(title + " " + citeUrl);;
 				retVal.put(title, citeUrl);
 				
