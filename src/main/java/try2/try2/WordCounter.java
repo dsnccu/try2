@@ -33,7 +33,11 @@ public class WordCounter {
 
 	public double countKeyword(String keyword) throws Exception {
 		if(content==null) {
-			content=fetchContent();
+			try {
+			content=fetchContent();}
+			catch(Exception e) {
+				
+			}
 		}
 		
 		content=content.toUpperCase(); 

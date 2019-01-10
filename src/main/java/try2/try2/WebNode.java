@@ -17,10 +17,14 @@ public class WebNode {
 		//����ۤv��score
 		webPage.setScore(keywords);
 		this.nodeScore= webPage.score;
-		//�A��Ĥl��score
+		//System.out.println("node"+nodeScore);
+		   //�A��Ĥl��score
+		double childscore=0;
 		for(WebNode child: children) {
-			this.nodeScore+=child.nodeScore;
+			//System.out.println("child"+child.nodeScore);
+			childscore+=child.nodeScore;
 		}
+		this.nodeScore= webPage.score+childscore;
 	}
 	
 	public void addChild(WebNode child) {
@@ -39,6 +43,20 @@ public class WebNode {
 			currNode= currNode.parent;
 		}
 		return retVal;
+	}
+	
+	public void calNodeScore(ArrayList<Keyword> keywords) {
+		try {
+			webPage.setScore(keywords);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		this.nodeScore= webPage.score;
+		for(int i=0;i<children.size();i++) {
+			nodeScore+=children.get(i).nodeScore;
+		}
+		System.out.println("node score:"+nodeScore);
 	}
 	
 }
