@@ -7,7 +7,6 @@ public class WebTree {
 	public WebNode root;
 
 	public WebTree(WebPage rootPage) {
-		// �u�ݫؤ@��root(�]�����O�]�t�ܦh�N�l�]����node)
 		this.root = new WebNode(rootPage);
 	}
 
@@ -16,11 +15,9 @@ public class WebTree {
 	}
 
 	private void setPostOrderScore(WebNode startNode, ArrayList<Keyword> keywords) throws Exception {
-		// ����Ĥl��score
 		for (WebNode child : startNode.children) {
 			setPostOrderScore(child, keywords);
 		}
-		// �A��ۤv
 		startNode.setNodeScore(keywords);
 	}
 
