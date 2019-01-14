@@ -28,7 +28,7 @@ public class GoogleQuery {
 	
 	public GoogleQuery(String searchKeyword){
 		this.searchKeyword = searchKeyword;
-		this.url = "https://www.google.com.tw/search?q=" + "實習％政大％工作"+searchKeyword + "";
+		this.url = "https://www.google.com.tw/search?q=" +searchKeyword + "+實習+徵才+政大"+"";
 	}
 	
 	private String fetchContent() throws IOException {
@@ -37,10 +37,10 @@ public class GoogleQuery {
 		URLConnection connection = urlStr.openConnection();
 		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		connection.connect();
+		System.out.println("search "+url);
 		InputStream inputStream = connection.getInputStream();
 		InputStreamReader inReader = new InputStreamReader(inputStream,"UTF8");
 		BufferedReader bf = new BufferedReader(inReader);
-		
 		String line = null;
 		while((line = bf.readLine()) != null) {
 			retVal += line;
@@ -55,21 +55,19 @@ public class GoogleQuery {
 		HashMap<String, String> retVal = new HashMap<String, String>();
 		Document document = Jsoup.parse(this.content);
 		Elements lis =  document.select("div.g");
-		
 		for(Element li : lis) {
 			try {
 				Element h3 = li.select("h3.r").get(0);
 				String title = h3.text();
-				
-//				System.out.println(li);
 				String ding = li.toString();
 				String citeUrl = ding.substring(ding.indexOf("http"), ding.indexOf("&amp"));
-//				Element cite = li.select("cite").get(0);
-//				String citeUrl = cite.text();
-				System.out.println(title + " " + citeUrl);;
-				retVal.put(title, citeUrl);
+				URLEncodeDecode encode=new URLEncodeDecode();
+				String decodedURL = encode.decode(citeUrl);
+				System.out.println(title + " " + decodedURL);
+				retVal.put(title, decodedURL);
 				
-				searchR.add(citeUrl);
+				searchR.add(decodedURL);
+				
 			} catch(IndexOutOfBoundsException e) {
 				
 			}

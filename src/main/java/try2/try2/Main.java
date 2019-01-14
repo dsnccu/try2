@@ -13,36 +13,89 @@ import org.jsoup.select.Elements;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
-		Scanner scanner = new Scanner(System.in);
+
 		System.out.println("Please Enter Your Keyword: ");
-		while (scanner.hasNextLine()) {
-			String keyword = scanner.next();
+		Scanner sc = new Scanner(System.in);
+
+		while (sc.hasNextLine()) {
+			ArrayList<Keyword> keywords = new ArrayList<Keyword>();
+			String keyword = sc.next();
+			keywords.add(new Keyword(keyword, 50));
+			keywords.add(new Keyword("工作", 3));
+			keywords.add(new Keyword("實習", 3));
+			keywords.add(new Keyword("政大", 40));
+			keywords.add(new Keyword("徵才", 5));
+			keywords.add(new Keyword("人力銀行", 20));
+
 			GoogleQuery googleQuery = new GoogleQuery(keyword);
+
+			// 搜尋結果
 			ArrayList<String> searchR = new ArrayList<String>();
 			googleQuery.query();
 			searchR = googleQuery.getSearchR();
-			System.out.println("2:" + searchR.get(1));
 
-			String url = searchR.get(1);
-			Document doc = null;
-			try {
-				doc = Jsoup.connect(url).get();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			
+			ArrayList<WebNode> nodelist=new ArrayList<WebNode>();
+			for (int a = 0; a < searchR.size(); a++) {
+				System.out.println("");
+				System.out.println(a + ": " + searchR.get(a));
+
+				// 找小孩
+				String url = searchR.get(a);
+				int x = url.indexOf("//") + 2;
+				int y = url.indexOf("/", x);
+				String shorturl = url.substring(0, y);
+				Document doc = null;
+				try {
+					doc = Jsoup.connect(url).get();
+				} catch (IOException e1) {
+				}
+
+				if (doc != null) {
+					Element body = doc.body();
+					Elements es = body.select("a");
+					ArrayList<String> children = new ArrayList<String>();
+
+					for (Iterator it = es.iterator(); it.hasNext();) {
+						Element e = (Element) it.next();
+						String u = e.attr("href");
+						if (u.startsWith("http")) {
+							children.add(u);
+						} else if (u.startsWith("/")) {
+							u = shorturl + u;
+							children.add(u);
+						}
+					}
+
+					WebPage rootPage = new WebPage(url);
+					WebTree tree = new WebTree(rootPage);
+
+					int i = 0;
+					while (i < children.size()) {
+						tree.root.addChild(new WebNode(new WebPage(children.get(i))));
+						i++;
+					}
+					tree.root.calNodeScore(keywords);
+					nodelist.add(tree.root);
+				} else {
+					WebPage rootPage = new WebPage(url);
+					WebTree tree = new WebTree(rootPage);
+					tree.root.nullnodescore(keywords);
+					nodelist.add(tree.root);
+				}
+				
 			}
-			Element body = doc.body();
-			Elements es = body.select("a");
-			for (Iterator it = es.iterator(); it.hasNext();) {
-				Element e = (Element) it.next();
-
-				// e.text()+" "+
-
-				System.out.println(e.attr("href"));
+			
+	 
+			int low = 0;
+			int high = nodelist.size() - 1;
+			Quicksort.quickSort(nodelist, low, high);
+			for(int i=nodelist.size()-1;i>=0;i--) {
+				System.out.println(nodelist.get(i).nodeScore);
 			}
-
 		}
+		sc.close();
 
-		scanner.close();
 	}
 
-};
+}
